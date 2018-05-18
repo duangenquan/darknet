@@ -1484,6 +1484,22 @@ image load_image_color(char *filename, int w, int h)
     return load_image(filename, w, h, 3);
 }
 
+image load_image_from_memory(char *data, int w, int h, int c)
+{
+    int i,j,k;
+    image im = make_image(w, h, c);
+    for(k = 0; k < c; ++k){
+        for(j = 0; j < h; ++j){
+            for(i = 0; i < w; ++i){
+                int dst_index = i + w*j + w*h*k;
+                int src_index = k + c*i + c*w*j;
+                im.data[dst_index] = (float)((unsigned char)data[src_index])/255.;
+            }
+        }
+    }
+    return im;
+}
+
 image get_image_layer(image m, int l)
 {
     image out = make_image(m.w, m.h, 1);

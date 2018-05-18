@@ -42,7 +42,30 @@ metadata get_metadata(char *file)
     if(!name_list) {
         fprintf(stderr, "No names or labels found\n");
     } else {
-        m.names = get_labels(name_list);
+        char* pch = strchr(name_list, '/');
+        if(pch)
+            m.names = get_labels(name_list);
+        else{
+            char *pf = strchr(file, '/');
+            if(pf){
+		        while(1){
+		            char* tmp = strchr(pf+1, '/');
+                    if(!tmp) break;
+                    pf = tmp;
+                }
+		        int len = pf - file + 1;
+                char path[260];
+                strcpy(path, file);
+                path[len] = '\0';
+                strcat(path, name_list);
+                printf("Load name from path: %s\n", path);
+                m.names = get_labels(path);
+                
+            }else{
+		        m.names = get_labels(name_list);
+            }
+        }
+            
     }
     m.classes = option_find_int(options, "classes", 2);
     free_list(options);
